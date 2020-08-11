@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro"
+       name="ur5" >
+
+  <!-- common stuff -->
+  <xacro:include filename="$(find ur5_descripton)/urdf/common.gazebo.xacro" />
+
+  <!-- ur5 -->
+  <xacro:include filename="$(find ur5_descripton)/urdf/ur5.urdf.xacro" />
+
+  <!-- RG2 gripper -->
+  <xacro:include filename="$(find ur5_descripton)/urdf/rg2_gripper.urdf.xacro" />
+
+  <!-- arm -->
+  <xacro:ur5_robot prefix="" joint_limited="false"/>
+
+  <!-- gripper -->
+  <xacro:rg2 prefix=""/>
+
+  <link name="robot_base" />
+
+  <joint name="robot_base_joint" type="fixed">
+    <parent link="robot_base" />
+    <child link = "base_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+</robot>

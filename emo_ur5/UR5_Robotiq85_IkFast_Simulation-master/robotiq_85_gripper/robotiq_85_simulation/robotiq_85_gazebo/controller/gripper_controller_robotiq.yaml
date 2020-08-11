@@ -1,0 +1,5 @@
+gripper:
+  type: velocity_controllers/JointVelocityController
+  joint: gripper_finger1_joint
+  pid: {p: 100.0, i: 1.0, d: 1.0}
+

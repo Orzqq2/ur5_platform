@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="limited" default="false"  doc="If true, limits joint range [-PI, PI] on all joints." />
+  <arg name="paused" default="false" doc="Starts gazebo in paused mode" />
+  <arg name="gui" default="false" doc="Starts gazebo gui" />
+
+  <arg name="arm_controllers" default="shoulder_pan_joint_controller shoulder_lift_joint_controller elbow_joint_controller wrist_1_joint_controller wrist_2_joint_controller wrist_3_joint_controller"/>
+  
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" default="worlds/empty.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <!-- <rosparam file="$(find ur_gazebo)/controller/gazebo_ros_control.yaml" command="load"/>-->
+
+  <!-- send robot urdf to param server -->
+  <include file="$(find ur_description)/launch/ur5_upload_with_gripper_table.launch">
+    <arg name="limited" value="$(arg limited)"/>
+  </include>
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -y 0.2 -z 0.35 " respawn="false" output="screen" />
+
+  <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+  <!-- start this controller -->
+  <rosparam file="$(find ur_gazebo)/controller/arm_controller_ur5.yaml" command="load"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" respawn="false" output="screen"/>
+  <node name="arm_controller_spawner_stop" pkg="controller_manager" type="controller_manager" args="load arm_controller_stop" respawn="false" output="screen"/>
+
+  <rosparam file="$(find ur_gazebo)/controller/gripper_controller_robotiq.yaml" command="load"/>
+  <!--<node name="gripper_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn gripper_controller" respawn="false" output="screen"/>-->
+  <node name="gripper_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" args="gripper_controller"/>
+   
+
+  <!-- load object -->
+  <node name="object" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_platform)/urdf/object.urdf -urdf -model object -y 0.8 -x -0.45 -z 0.44" />
+
+  <!-- load bin -->
+  <!--<node name="bin" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_platform)/urdf/bin.urdf -urdf -model bin -y -0.6 -x -0.5 -z 0.0" />-->
+
+</launch>

@@ -1,0 +1,26 @@
+# comac_painter_ur5_tensorflow:dev
+# Downloads the comac and other source code for development
+
+### Tensorflow environment
+FROM tensorflow/tensorflow:1.14.0-gpu 
+MAINTAINER Jinfa Chen  Xiang Zheng
+
+
+### ROS and Moveit develope environment
+ENV DEBIAN_FRONTEND=noninteractive
+RUN sh -c '. /etc/lsb-release && echo "deb http://mirrors.ustc.edu.cn/ros/ubuntu/ $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/ros-latest.list' && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654 && \
+    apt-get -y update && \
+    apt-get update -y --fix-missing && \
+    apt-get -y install ros-melodic-desktop-full --allow-unauthenticated && \
+    apt-get -y install python-pip && \
+    apt-get -y install python-rosdep && \
+    rosdep init && \
+    rosdep update && \
+    echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && \
+    apt-get -y install python-rosinstall python-rosinstall-generator \
+    python-wstool build-essential libblas-dev \
+    liblapack-dev --allow-unauthenticated && \
+    apt-get clean
+
+
